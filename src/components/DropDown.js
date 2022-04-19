@@ -2,19 +2,16 @@ import { useState } from 'react';
 import { View, TouchableOpacity, Text, StyleSheet } from "react-native";
 import { CommonStyles } from '../style/CommonStyles';
 
-export default function DropDown({prompt, options = [], startValue = {}, onSelected = () => {}}) {
+export default function DropDown({prompt, editable, options = [], startValue, onSelected = () => {}}) {
     const [showOptions, setShowOptions] = useState(false);
-    const [value, setValue] = useState(startValue);
 
-    let data = options.map((val, i) => ({
+    const data = options.map((val, i) => ({
         id: i,
-        name: val,
+        name: val.name,
     }));
 
     const onSelectedValue = (val) => {
-        setValue(val);
         setShowOptions(false);
-
         onSelected(val);
     };
 
@@ -28,10 +25,13 @@ export default function DropDown({prompt, options = [], startValue = {}, onSelec
                 borderBottomLeftRadius: showOptions ? 0 : styles.dropdown.borderRadius,
                 borderBottomRightRadius: showOptions ? 0 : styles.dropdown.borderRadius,
                 marginBottom: showOptions ? 0 : styles.dropdown.marginBottom,
-            }} onPress={() => setShowOptions(!showOptions)}>
+            }} onPress={() => { 
+                if(editable)
+                    setShowOptions(!showOptions);
+            }}>
                 <Text style={{
-                    color: value.name === undefined ? CommonStyles.prompt.color : CommonStyles.text.color
-                }}>{value.name !== undefined ? value.name : (prompt ? prompt : "Wähle eine Option...")}</Text>
+                    color: startValue ? CommonStyles.text.color : CommonStyles.prompt.color
+                }}>{startValue ? startValue : (prompt ? prompt : "Wähle eine Option...")}</Text>
             </TouchableOpacity>
 
             <View style={{
@@ -45,11 +45,11 @@ export default function DropDown({prompt, options = [], startValue = {}, onSelec
             }}>
                 {showOptions && data.map((val, i) => {
                     return (
-                        <TouchableOpacity style={{
-                            backgroundColor: value.id === val.id ? 'pink' : hide
+                        <TouchableOpacity key={String(i)} style={{
+                            backgroundColor: startValue && data.findIndex((val) => val.name === startValue) === val.id ? 'pink' : hide
                         }} onPress={() => onSelectedValue(val)}>
                             
-                            <Text style={styles.itemText} key={String(i)}>{val.name}</Text>
+                            <Text key={String(i)} style={styles.itemText}>{val.name}</Text>
                         </TouchableOpacity>
                     );
                 })}

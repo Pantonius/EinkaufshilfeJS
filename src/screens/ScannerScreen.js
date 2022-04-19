@@ -1,9 +1,11 @@
-import { StackActions } from '@react-navigation/native';
+import { StackActions} from '@react-navigation/native';
 import { BarCodeScanner } from 'expo-barcode-scanner';
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, Text, View} from 'react-native';
 
-export default function ScannerScreen({navigation}) {
+export default function ScannerScreen({ route, navigation }) {
+  const { addItem } = route.params;
+
   const [hasPermission, setHasPermission] = useState(null);
   const requestPermission = async () => {
     const { status } = await BarCodeScanner.requestPermissionsAsync();
@@ -14,11 +16,13 @@ export default function ScannerScreen({navigation}) {
     requestPermission();
   }, []);
 
-  const handleBarCodeScanned = ({type, data}) => {
-    console.log('Type: ' + type);
+  const handleBarCodeScanned = ({data}) => {
+    navigation.dispatch(StackActions.replace('Scanner', {addItem: addItem}));
 
-    navigation.dispatch(StackActions.replace('Scanner'));
-    navigation.navigate('AddItem', { code: data });
+    if(addItem === 'true')
+      navigation.navigate('AddItem', { barcode: data });
+    else
+      navigation.navigate('RemoveItem', { barcode: data });
   };
 
   if(hasPermission === null) {
@@ -31,39 +35,52 @@ export default function ScannerScreen({navigation}) {
 
   return (
     <View style={styles.container}>
-      <View style={styles.scanner}>
-        <BarCodeScanner onBarCodeScanned={handleBarCodeScanned}
-          style={{height: 400, width: 400}} />
+      <View style={styles.barcodeContainer}>
+        <View style={styles.scanner}>
+          <BarCodeScanner onBarCodeScanned={handleBarCodeScanned}
+            style={{height: 400, width: 400}} />
+        </View>
+        <Text style={styles.overlayText}>{addItem === 'true' ? 'Einchecken' : 'Auschecken'}</Text>
       </View>
     </View>
   );
 }
 const styles = StyleSheet.create({
-container: {
+  container: {
     flex: 1,
     backgroundColor: '#fff',
     alignItems: 'center',
+  },
+
+  barcodeContainer: {
+    flex: 1,
     justifyContent: 'center',
+    alignItems: 'center',
   },
 
   scanner: {
-    position: 'absolute',
     alignItems: 'center',
     justifyContent: 'center',
     height: 300,
     width: 300,
     overflow: 'hidden',
-    borderRadius: 50,
+    borderTopLeftRadius: 50,
+    borderTopRightRadius: 50,
     backgroundColor: 'tomato'
   },
 
   overlayText: {
     color: 'white',
     backgroundColor: 'black',
+    borderBottomLeftRadius: 50,
+    borderBottomRightRadius: 50,
     fontSize: 24,
 
+    width: 300,
+    textAlign: 'center',
     padding: 4,
     margin: 4,
+    marginTop: 0,
   },
 
   overlayButton: {
