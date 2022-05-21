@@ -1,4 +1,5 @@
-import { View, StyleSheet, FlatList, Text, Image, TouchableOpacity } from "react-native";
+import { View, StyleSheet, FlatList, Text, TouchableOpacity } from "react-native";
+import Icon from 'react-native-vector-icons/MaterialIcons';
 import { useEffect, useState } from "react";
 import { openDatabase, removeItem } from "../util/db";
 import { CommonStyles } from "../style/CommonStyles";
@@ -18,12 +19,12 @@ function Item({id, title, userid, purchaseinfoid, expirationdate, inventorylocat
                     <TouchableOpacity style={styles.editButton} onPress={() => {
                         onEdit(id);
                     }}>
-                        <Image style={styles.itemButtons} source={require('../img/edit_black.png')} />
+                        <Icon name='edit' style={styles.itemButtons} />
                     </TouchableOpacity>
                     <TouchableOpacity style={styles.removeButton} onPress={() => {
                         onRemove(id);
                     }}>
-                        <Image style={styles.itemButtons} source={require('../img/delete_black.png')} />
+                        <Icon name='delete-outline' style={styles.itemButtons} />
                     </TouchableOpacity>
                 </View>
             </View>
@@ -125,7 +126,6 @@ const styles = StyleSheet.create({
     },
 
     itemButtons: {
-        width: 24,
-        height: 24,
+        fontSize: 32,
     },
 });

@@ -1,5 +1,7 @@
 import { StyleSheet, View, TouchableOpacity, Image, TextInput } from "react-native";
+import Icon from 'react-native-vector-icons/MaterialIcons';
 import { useState } from "react";
+import { CommonStyles } from "../style/CommonStyles";
 
 export default function Counter({ style, onValueChange }) {
     const [count, setCount] = useState(1);
@@ -10,14 +12,14 @@ export default function Counter({ style, onValueChange }) {
                     onValueChange(count - 1);
                     setCount(count - 1);
                 }}>
-                <Image style={styles.buttonIcon} source={require('../img/remove_black.png')} />
+                <Icon name="remove" style={styles.buttonIcon} />
             </TouchableOpacity>
             <TextInput style={styles.counterText}>{count}</TextInput>
             <TouchableOpacity style={{ ...styles.button, ...styles.right }} onPress={() => {
                     onValueChange(count + 1);
                     setCount(count + 1);
                 }}>
-                <Image style={styles.buttonIcon} source={require('../img/add_black.png')} />
+                <Icon name="add" style={styles.buttonIcon} />
             </TouchableOpacity>
 
         </View>
@@ -26,7 +28,7 @@ export default function Counter({ style, onValueChange }) {
 
 const styles = StyleSheet.create({
     button: {
-        backgroundColor: 'pink',
+        backgroundColor: CommonStyles.neutral.color,
         padding: 2,
     },
 
@@ -38,8 +40,9 @@ const styles = StyleSheet.create({
     },
 
     buttonIcon: {
-        width: 24,
-        height: 24,
+        marginVertical: 4,
+        marginHorizontal: 2,
+        fontSize: 16,
     },
 
     left: {

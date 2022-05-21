@@ -1,14 +1,15 @@
 import { useState, useEffect } from "react"
-import { StyleSheet, View, Text, Image, ScrollView } from "react-native";
+import { View, Text, Image, ScrollView } from "react-native";
+import Divider from "../components/Divider";
 import { CommonStyles } from "../style/CommonStyles";
 import { openDatabase } from "../util/db";
+import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5';
 
 export default function EditItemModal({ route, navigation }) {
     const { id, name } = route.params;
     navigation.setOptions({ title: name });
 
     const [item, setItem] = useState(null);
-    const [user, setUser] = useState(null);
     const [product, setProduct] = useState(null);
     const [purchaseinfo, setPurchaseinfo] = useState(null);
     const [inventorylocation, setInventorylocation] = useState(null);
@@ -17,13 +18,6 @@ export default function EditItemModal({ route, navigation }) {
     useEffect(() => {
         openDatabase().transaction((tx) => {
             if(item === null) return;
-            
-            // User
-            tx.executeSql('SELECT * FROM user WHERE user.id = ?', [item.userid], (_, { rows: { _array }}) => {
-                setUser(_array.length > 0 ? _array[0] : null);
-            }, (tx, e) => {
-                console.log('USER: ' + e.message);
-            });
 
             // Product Info
             tx.executeSql('SELECT * FROM product WHERE product.barcode = ?', [item.productbarcode], (_, { rows: { _array }}) => {
@@ -64,21 +58,6 @@ export default function EditItemModal({ route, navigation }) {
     return (
         <ScrollView>
             <View style={CommonStyles.card}>
-                <Text style={CommonStyles.cardHeader}>User</Text>
-                <View style={CommonStyles.hbox}>
-                    <Text style={CommonStyles.formTextTitle}>Name:</Text>
-                    <Text style={CommonStyles.formTextDesc}>{user ? user.name : ''}</Text>
-                </View>
-                <View style={CommonStyles.hbox}>
-                    <Text style={CommonStyles.formTextTitle}>Email:</Text>
-                    <Text style={CommonStyles.formTextDesc}>{user ? user.email : ''}</Text>
-                </View>
-                <View style={CommonStyles.hbox}>
-                    <Text style={CommonStyles.formTextTitle}>Last Login:</Text>
-                    <Text style={CommonStyles.formTextDesc}>{user ? user.lastlogin : ''}</Text>
-                </View>
-            </View>
-            <View style={CommonStyles.card}>
                 <Text style={CommonStyles.cardHeader}>Product Information</Text>
                 <View style={CommonStyles.hbox}>
                     <Text style={CommonStyles.formTextTitle}>Name:</Text>
@@ -94,8 +73,9 @@ export default function EditItemModal({ route, navigation }) {
                     <Text style={CommonStyles.formTextTitle}>Expiration Date:</Text>
                     <Text style={CommonStyles.formTextDesc}> {product ? product.expirationdate : ''}</Text>
                 </View>
-            </View>
-            <View style={CommonStyles.card}>
+
+                <Divider />
+                
                 <Text style={CommonStyles.cardHeader}>Purchase Info</Text>
                 <View style={CommonStyles.hbox}>
                     <Text style={CommonStyles.formTextTitle}>Date:</Text>
@@ -105,8 +85,9 @@ export default function EditItemModal({ route, navigation }) {
                     <Text style={CommonStyles.formTextTitle}>Address:</Text>
                     <Text style={CommonStyles.formTextDesc}>{purchaseinfo ? purchaseinfo.street + purchaseinfo.streetnumber + ',\n' + purchaseinfo.postalcode + ',\n' + purchaseinfo.city + ',\n' + purchaseinfo.country : ''}</Text>
                 </View>
-            </View>
-            <View style={CommonStyles.card}>
+                
+                <Divider />
+                
                 <Text style={CommonStyles.cardHeader}>Inventory Location</Text>
                 <View style={CommonStyles.hbox}>
                     <Text style={CommonStyles.formTextTitle}>Name:</Text>

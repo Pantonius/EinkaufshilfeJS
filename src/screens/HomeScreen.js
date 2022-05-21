@@ -1,5 +1,6 @@
 import { StatusBar } from "expo-status-bar";
-import { StyleSheet, View, Button, FlatList, Text, TouchableOpacity, Image } from "react-native";
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import { StyleSheet, Dimensions, View, Button, FlatList, Text, TouchableOpacity } from "react-native";
 import { useState, useEffect } from "react";
 import { CommonStyles } from "../style/CommonStyles";
 import { openDatabase, refreshDB } from "../util/db";
@@ -16,6 +17,31 @@ function Item({title, imageSource, amount, onPress}) {
         </TouchableOpacity>
     );
 }
+
+function Card({title, icon, onPress}) {
+    const cardStyle = StyleSheet.create({
+        button: {
+            ...CommonStyles.card,
+
+            width: (Dimensions.get("window").width / 2) - CommonStyles.card.margin * 2,
+            height: (Dimensions.get("window").width / 2) - CommonStyles.card.margin * 2,
+            alignItems: 'center',
+            flexDirection: 'column',
+        },
+
+        buttonImage: {
+            fontSize: 128,
+        }
+    });
+
+    return (
+        <TouchableOpacity style={cardStyle.button} onPress={onPress}>
+            <Icon style={cardStyle.buttonImage} name={icon} />
+            <Text>{title}</Text>
+        </TouchableOpacity>
+    );
+}
+
 
 export default function HomeScreen({navigation}) {
     const [items, setItems] = useState(null);
@@ -36,8 +62,11 @@ export default function HomeScreen({navigation}) {
     return (
         <View style={styles.container}>
             <StatusBar />
-            <Button title="Einchecken" onPress={() => navigation.navigate('Scanner', { addItem: 'true' })} />
-            <Button title="Auschecken" onPress={() => navigation.navigate('Scanner', { addItem: 'false' })} />
+            <View style={styles.cardLayout}>
+                <Card title="Einchecken" icon="barcode-scan" onPress={() => navigation.navigate('Scanner', { addItem: 'true' })} />
+                <Card title="Auschecken" icon="barcode-off" onPress={() => navigation.navigate('Scanner', { addItem: 'false' })} />
+                <Card title="Einkaufsliste" icon="format-list-text" onPress={() => navigation.navigate('ShoppingList')} />
+            </View>
             <Button title="DB säubern" onPress={() => refreshDB()} />
             <FlatList nestedScrollEnabled={true} data={items} renderItem={renderItem} keyExtractor={item => item.id} />
         </View>);
@@ -52,5 +81,11 @@ const styles = StyleSheet.create({
     itemText: {
         ...CommonStyles.text,
         fontSize: 18,
-    }
+    },
+
+    cardLayout: {
+        alignItems: 'center',
+        flexDirection: 'row',
+        flexWrap: 'wrap'
+    },
 });

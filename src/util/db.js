@@ -37,13 +37,6 @@ export function openDatabase() {
         tx.executeSql('CREATE TABLE IF NOT EXISTS inventorylocation(' +
             'id INTEGER PRIMARY KEY AUTOINCREMENT,' +
             'name TEXT UNIQUE)');
-
-        // User
-        tx.executeSql('CREATE TABLE IF NOT EXISTS user(' +
-            'id INTEGER PRIMARY KEY AUTOINCREMENT,' +
-            'name TEXT,' +
-            'email TEXT UNIQUE,' +
-            'lastlogin TEXT)');
         
         // Product
         tx.executeSql('CREATE TABLE IF NOT EXISTS product(' +
@@ -60,12 +53,11 @@ export function openDatabase() {
         // Item
         tx.executeSql('CREATE TABLE IF NOT EXISTS item(' +
             'id INTEGER PRIMARY KEY AUTOINCREMENT,' +
-            'userid INTEGER,' +
+            'userid TEXT,' +
             'purchaseinfoid INTEGER,' +
             'productbarcode INTEGER,'  +
             'expirationdate TEXT,'  +
             'inventorylocationid INTEGER,' +
-            'FOREIGN KEY(userid) REFERENCES user(id),' +
             'FOREIGN KEY(purchaseinfoid) REFERENCES purchaseinfo(id),' +
             'FOREIGN KEY(productbarcode) REFERENCES product(id),' +
             'FOREIGN KEY(inventorylocationid) REFERENCES inventorylocation(id))')

@@ -67,6 +67,19 @@ export const CommonStyles = StyleSheet.create({
         flex: 2,
     },
 
+    button: {
+        backgroundColor: '#87cefa',
+        padding: 12,
+        borderRadius: 6,
+        margin: 8,
+        marginTop: 16,
+        alignSelf: 'center',
+    },
+
+    buttonText: {
+      color: 'white',
+    },
+
     prompt: {
         color: '#9e9e9e',
     },

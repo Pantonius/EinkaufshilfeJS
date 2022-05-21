@@ -4,7 +4,8 @@ import Barcode from '../components/Barcode';
 import Counter from '../components/Counter';
 import DropDown from '../components/DropDown';
 import { CommonStyles } from '../style/CommonStyles';
-import { insertItem, insertProduct, insertPurchaseinfo, openDatabase } from '../util/db';
+import { insertItem, insertProduct, insertPurchaseinfo, insertUser, openDatabase } from '../util/db';
+import { auth } from '../util/firebase';
 
 
 function KnownText({ known }) {
@@ -83,7 +84,7 @@ export default function AddItemModal({ route, navigation }) {
     return (
         <View style={styles.container}>
             <View>
-                <View style={{ width: '100%', height: 256, }}>
+                <View style={{ width: '100%', height: 256, marginTop: 'auto' }}>
                     {!(product && productImage) ? 
                         <TouchableOpacity style={{ ...CommonStyles.roundImage, width: '100%', height: '100%', alignItems: 'center', backgroundColor: 'rgba(0, 0, 0, .4)' }} onPress={() => {
                             navigation.navigate('Camera');
@@ -108,17 +109,17 @@ export default function AddItemModal({ route, navigation }) {
                 }} />
             </View>
             
-            <View style={CommonStyles.hbox}>
+            <View style={styles.buttonBox}>
                 <TouchableOpacity style={styles.actionButton} onPress={() => navigation.goBack() }>
                     <Text style={styles.actionButtonText}>Abbruch</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={{...styles.actionButton, backgroundColor: 'springgreen'}} onPress={() => {
+                <TouchableOpacity style={{...styles.actionButton, backgroundColor: CommonStyles.positive.color}} onPress={() => {
                     // TODO Add
                     insertProduct(barcode, productName, productKind, productImage);
                     insertPurchaseinfo('Deine Mama', 2, 12345, 'Hamburg', 'Deutschland');
-                    
+
                     for(let i = 0; i < count; i++) {
-                        insertItem(null, null, barcode);
+                        insertItem(auth.currentUser.displayName, null, barcode);
                     }
                     
                     navigation.goBack();
@@ -151,4 +152,9 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         fontSize: 18,
     },
+
+    buttonBox: {
+        ...CommonStyles.hbox,
+        marginBottom: 32,
+    }
 });
