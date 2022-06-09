@@ -1,7 +1,7 @@
-import { StyleSheet, View, TouchableOpacity, Image, TextInput } from "react-native";
+import { StyleSheet, View, TouchableOpacity, TextInput } from "react-native";
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { useState } from "react";
-import { CommonStyles } from "../style/CommonStyles";
+import * as CommonColors from '../style/CommonColors';
 
 export default function Counter({ style, onValueChange }) {
     const [count, setCount] = useState(1);
@@ -28,7 +28,7 @@ export default function Counter({ style, onValueChange }) {
 
 const styles = StyleSheet.create({
     button: {
-        backgroundColor: CommonStyles.neutral.color,
+        backgroundColor: CommonColors.neutral,
         padding: 2,
     },
 

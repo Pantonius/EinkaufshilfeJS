@@ -5,7 +5,8 @@ import {
   Text, Pressable } from "react-native";
 import { useState, useEffect } from "react";
 
-import { CommonStyles } from "../style/CommonStyles";
+import { CommonStyles } from '../style/CommonStyles';
+import * as CommonColors from '../style/CommonColors';
 
 import {
   createUserWithEmailAndPassword,
@@ -131,7 +132,7 @@ export default function LoginScreen({ navigation }) {
             </TouchableOpacity>
 
             <Pressable onPress={() => isLoginScreen(false)}>
-              <Text style={{ color: CommonStyles.neutral.color }}>Registrieren</Text>
+              <Text style={{ color: CommonColors.neutral }}>Registrieren</Text>
             </Pressable>
           </View>
         :
@@ -144,7 +145,7 @@ export default function LoginScreen({ navigation }) {
             </TouchableOpacity>
 
             <Pressable onPress={() => isLoginScreen(true)}>
-              <Text style={{ color: CommonStyles.neutral.color }}>Einloggen</Text>
+              <Text style={{ color: CommonColors.neutral }}>Einloggen</Text>
             </Pressable>
           </View>
         }
@@ -175,7 +176,7 @@ const styles = StyleSheet.create({
   },
 
   button: {
-    backgroundColor: CommonStyles.positive.color,
+    backgroundColor: CommonColors.positive,
     ...CommonStyles.button
   },
 

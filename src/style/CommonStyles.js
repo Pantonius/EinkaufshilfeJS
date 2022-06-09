@@ -1,4 +1,5 @@
 import { StyleSheet } from "react-native";
+import * as CommonColors from '../style/CommonColors';
 
 export const CommonStyles = StyleSheet.create({
 
@@ -36,7 +37,7 @@ export const CommonStyles = StyleSheet.create({
 
     text: {
         fontSize: 13,
-        color: 'black',
+        color: CommonColors.text,
     },
 
     roundImage: {
@@ -53,7 +54,7 @@ export const CommonStyles = StyleSheet.create({
     formTextTitle: {
         fontSize: 18,
         fontWeight: 'bold',
-        color: 'black',
+        color: CommonColors.text,
         textAlignVertical: 'center',
 
         flex: 1,
@@ -61,14 +62,14 @@ export const CommonStyles = StyleSheet.create({
 
     formTextDesc: {
         fontSize: 18,
-        color: 'black',
+        color: CommonColors.text,
         textAlignVertical: 'center',
 
         flex: 2,
     },
 
     button: {
-        backgroundColor: '#87cefa',
+        backgroundColor: CommonColors.neutral,
         padding: 12,
         borderRadius: 6,
         margin: 8,
@@ -78,22 +79,6 @@ export const CommonStyles = StyleSheet.create({
 
     buttonText: {
       color: 'white',
-    },
-
-    prompt: {
-        color: '#9e9e9e',
-    },
-
-    negative: {
-        color: 'tomato',
-    },
-
-    neutral: {
-        color: '#87cefa',
-    },
-
-    positive: {
-        color: 'springgreen',
     },
 
     center: {

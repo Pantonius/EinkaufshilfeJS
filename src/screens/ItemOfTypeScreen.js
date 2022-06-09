@@ -1,19 +1,20 @@
 import { View, StyleSheet, FlatList, Text, TouchableOpacity } from "react-native";
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { useEffect, useState } from "react";
-import { openDatabase, removeItem } from "../util/db";
+import { openDatabase, removeItem, formatDate } from "../util/db";
 import { CommonStyles } from "../style/CommonStyles";
+import * as CommonColors from "../style/CommonColors";
 
-function Item({id, title, userid, purchaseinfoid, expirationdate, inventorylocationid, onRemove, onEdit, removed}) {
+function Item({id, title, userid, purchasedate, expirationdate, inventorylocation, onRemove, onEdit, removed}) {
     return (
-        <View style={{...styles.item, backgroundColor: removed ? CommonStyles.negative.color : styles.item.backgroundColor }}>
+        <View style={{...styles.item, backgroundColor: removed ? CommonColors.negative : styles.item.backgroundColor }}>
             <View style={CommonStyles.hbox}>
                 <View style={styles.itemInfo}>
                     <Text style={CommonStyles.cardTitle}>{title}</Text>
                     <Text>User: {userid}</Text>
-                    <Text>PurchaseInfo: {purchaseinfoid}</Text>
-                    <Text>Expiration Date: {expirationdate}</Text>
-                    <Text>Inventory Location: {inventorylocationid}</Text>
+                    <Text>Kaufdatum: {formatDate(new Date(purchasedate))}</Text>
+                    <Text>Mindestshaltbarkeitsdatum: {formatDate(new Date(expirationdate))}</Text>
+                    <Text>Aufbewahrungsort: {inventorylocation}</Text>
                 </View>
                 <View style={styles.itemButtonArea}>
                     <TouchableOpacity style={styles.editButton} onPress={() => {
@@ -40,19 +41,20 @@ export default function ItemOfTypeScreen({ route, navigation }) {
 
     useEffect(() => {
         openDatabase().transaction((tx) => {
-            tx.executeSql('SELECT id, userid, purchaseinfoid, barcode, expirationdate, inventorylocationid, name, imageblob, productkind FROM item, product WHERE item.productbarcode = product.barcode AND item.productbarcode = ? ORDER BY id DESC', [barcode], (_, {rows: { _array }}) => {
+            tx.executeSql('SELECT item.id, userid, barcode, expirationdate, product.name, imageblob, productkind, purchaseinfo.date AS purchasedate FROM item, product, purchaseinfo WHERE item.productbarcode = product.barcode AND item.productbarcode = ? AND item.purchaseinfoid = purchaseinfo.id ORDER BY item.id DESC', [barcode], (_, {rows: { _array }}) => {
                 setItems(_array.length > 0 ? _array : null);
+                _array.forEach((elem) => console.log(JSON.stringify(elem)));
             });
-        });
+        }, (error) => console.log(error));
     }, [removed]);
 
     const renderItem = ({ item }) => {
         return (<Item   id={item.id}
                         title={item.name}
                         userid={item.userid}
-                        purchaseinfoid={item.purchaseinfoid}
+                        purchasedate={item.purchasedate}
                         expirationdate={item.expirationdate}
-                        inventorylocationid={item.inventorylocationid}
+                        inventorylocation={null}
                         onRemove={(id) => {
                             setRemoved(id);
 
@@ -110,7 +112,7 @@ const styles = StyleSheet.create({
     },
 
     removeButton: {
-        backgroundColor: CommonStyles.negative.color,
+        backgroundColor: CommonColors.negative,
         borderBottomRightRadius: CommonStyles.card.borderRadius,
         alignItems: 'center',
         justifyContent: 'center',
@@ -118,7 +120,7 @@ const styles = StyleSheet.create({
     },
 
     editButton: {
-        backgroundColor: CommonStyles.neutral.color,
+        backgroundColor: CommonColors.neutral,
         borderTopRightRadius: CommonStyles.card.borderRadius,
         alignItems: 'center',
         justifyContent: 'center',

@@ -1,7 +1,7 @@
 import { StyleSheet, Animated, View } from "react-native";
 import { useRef, useEffect } from "react";
 import Easing from "react-native/Libraries/Animated/Easing";
-import { CommonStyles } from "../style/CommonStyles";
+import * as CommonColors from '../style/CommonColors';
 
 export default function LoadingIndicator({ baseColor, accentColor }) {
   const rotation = useRef(new Animated.Value(0)).current;
@@ -58,7 +58,7 @@ const styles = StyleSheet.create({
   indicatorFill: {
     width: radius,
     height: radius,
-    backgroundColor: CommonStyles.neutral.color,
+    backgroundColor: CommonColors.neutral,
   },
 
   innerCircle: {

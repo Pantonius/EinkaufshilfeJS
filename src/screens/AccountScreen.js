@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5';
 
 import { CommonStyles } from '../style/CommonStyles';
+import * as CommonColors from '../style/CommonColors';
 import Divider from '../components/Divider';
 
 import { auth } from '../util/firebase';
@@ -47,7 +48,7 @@ export default function AccountScreen({ navigation }) {
         <TextInput placeholder={'Benutzername'} value={displayName} style={styles.textInput} onChangeText={displayName => setDisplayName(displayName)} />
         <View style={{ ...CommonStyles.hbox, ...styles.textInput }}>
           <TextInput placeholder={'Email'} value={email} onChangeText={email => setEmail(email)} editable={false} />
-          { verified && <FontAwesome5Icon name='check' style={{ fontSize: 18, alignSelf: 'center', marginLeft: 'auto', color: CommonStyles.neutral.color }} /> }
+          { verified && <FontAwesome5Icon name='check' style={{ fontSize: 18, alignSelf: 'center', marginLeft: 'auto', color: CommonColors.neutral }} /> }
         </View>
 
         <Divider />
@@ -90,7 +91,7 @@ export default function AccountScreen({ navigation }) {
                     });
               }, (error) => console.log(error));
             }}>
-              {loadingPassword ? <LoadingIndicator baseColor={CommonStyles.neutral.color} accentColor={'white'} /> : 
+              {loadingPassword ? <LoadingIndicator baseColor={CommonColors.neutral} accentColor={'white'} /> : 
                 <Text style={CommonStyles.buttonText}>Passwort ändern</Text>
               }
             </TouchableOpacity>

@@ -5,6 +5,11 @@ const db = SQlite.openDatabase('inventory');
 
 export function openDatabase() {
     db.transaction((tx) => {
+        // Household
+        tx.executeSql('CREATE TABLE IF NOT EXISTS household(' + 
+            'id INTEGER PRIMARY KEY AUTOINCREMENT,' +
+            'name TEXT UNIQUE)');
+
         // Country
         tx.executeSql('CREATE TABLE IF NOT EXISTS country(' +
             'id INTEGER PRIMARY KEY AUTOINCREMENT,' +
@@ -36,7 +41,16 @@ export function openDatabase() {
         // InventoryLocation
         tx.executeSql('CREATE TABLE IF NOT EXISTS inventorylocation(' +
             'id INTEGER PRIMARY KEY AUTOINCREMENT,' +
-            'name TEXT UNIQUE)');
+            'name TEXT,' +
+            'householdid INTEGER,' +
+            'FOREIGN KEY(householdid) REFERENCES household(id))');
+
+        // User
+        tx.executeSql('CREATE TABLE user(' +
+            'id INTEGER PRIMARY KEY AUTOINCREMENT,' +
+            'name TEXT UNIQUE,' +
+            'email TEXT UNIQUE,' +
+            'lastLogin TEXT)');
         
         // Product
         tx.executeSql('CREATE TABLE IF NOT EXISTS product(' +
@@ -53,21 +67,25 @@ export function openDatabase() {
         // Item
         tx.executeSql('CREATE TABLE IF NOT EXISTS item(' +
             'id INTEGER PRIMARY KEY AUTOINCREMENT,' +
-            'userid TEXT,' +
+            'userid INTEGER,' +
             'purchaseinfoid INTEGER,' +
             'productbarcode INTEGER,'  +
             'expirationdate TEXT,'  +
             'inventorylocationid INTEGER,' +
+            'FOREIGN KEY(userid) REFERENCES user(id),' +
             'FOREIGN KEY(purchaseinfoid) REFERENCES purchaseinfo(id),' +
             'FOREIGN KEY(productbarcode) REFERENCES product(id),' +
             'FOREIGN KEY(inventorylocationid) REFERENCES inventorylocation(id))')
     });
 
-    insertCountry('Deutschland');
-    insertProductkind('Getränk');
-    insertProductkind('Alkohol');
-
     return db;
+}
+
+export function initializeDB() {
+    openDatabase();
+    ['Getränk', 'Nahrungsmittel', 'Hygieneprodukt', 'Reinigungsmittel', 'Sonstiges'].forEach((kind) => {
+        insertProductkind(kind);
+    });
 }
 
 export function read(table, column) {
@@ -94,7 +112,7 @@ export function insertCountry(name) {
 export function insertProduct(barcode, name, productKind, image) {
     db.transaction((tx) => {
         tx.executeSql('INSERT INTO product(barcode, name, productkind, imageblob) VALUES (?, ?, ?, ?)', [barcode, name, productKind, image]);
-        tx.executeSql('SELECT * FROM product', [], (_, { rows }) => console.log(JSON.stringify(rows)));
+        //tx.executeSql('SELECT barcode, name, productkind FROM product', [], (_, { rows }) => console.log(JSON.stringify(rows)));
     }, (e) => {
         console.log('Error: ' + e.message);
     });
@@ -109,17 +127,33 @@ export function insertProductkind(name) {
     });
 }
 
-export function insertItem(userid, purchaseinfoid, productbarcode) {
+export function insertItem(userid, purchaseinfoid, productbarcode, expirationdate) {
     db.transaction((tx) => {
-        tx.executeSql('INSERT INTO item(userid, purchaseinfoid, productbarcode) VALUES (?, ?, ?)', [userid, purchaseinfoid, productbarcode]);
+        tx.executeSql('INSERT INTO item(userid, purchaseinfoid, productbarcode, expirationdate) VALUES (?, ?, ?, ?)', [userid, purchaseinfoid, productbarcode, expirationdate && expirationdate.toISOString()]);
         tx.executeSql('SELECT * FROM item', [], (_, { rows }) => console.log(JSON.stringify(rows)));
     }, (e) => {
         console.log('Error: ' + e.message);
     });
 }
 
-export function insertPurchaseinfo(street, streetnumber, postalcode, city, country) {
-    
+export function insertPurchaseinfo(date, ondone = () => {}) {
+    db.transaction((tx) => {
+        tx.executeSql('INSERT INTO purchaseinfo(date) VALUES (?)', [date && date.toISOString()]);
+        tx.executeSql('SELECT * FROM purchaseinfo', [], (_, { rows }) => console.log(JSON.stringify(rows)));
+
+        if(ondone)
+            tx.executeSql('SELECT id FROM purchaseinfo ORDER BY id desc LIMIT 1', [], (_, { rows: { _array } }) => { ondone(_array[0].id) });
+    }, (e) => {
+        console.log('Error: ' + e.message);
+    });
+}
+
+export function insertInventoryLocation(name, householdid) {
+    db.transaction((tx) => {
+        tx.executeSql('INSERT INTO inventorylocation(name, householdid) VALUES (?, ?)', [name, householdid]);
+    }, (e) => {
+        console.log('Error: ' + e.message);
+    });
 }
 
 export function removeItem(id) {
@@ -196,8 +230,23 @@ export function refreshDB() {
         tx.executeSql('DROP TABLE productkind');
         tx.executeSql('DROP TABLE purchaseinfo');
         tx.executeSql('DROP TABLE user');
-    })
+    });
+    
+    initializeDB();
 
-    // reload
-    openDatabase();
+    console.log('DATABASE REFRESHED');
+}
+
+
+// UTIL
+
+
+export function formatDate(date) {
+    if(!date) return `--.--.----`;
+
+    const double = (num) => {
+      return ('' + num).length > 1 ? ('' + num) : ('0' + num);
+    }
+
+    return `${double(date.getDate())}.${double(date.getMonth())}.${date.getFullYear()}`;
 }

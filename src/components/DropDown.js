@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { View, TouchableOpacity, Text, StyleSheet } from "react-native";
 import { CommonStyles } from '../style/CommonStyles';
+import * as CommonColors from '../style/CommonColors';
 
 export default function DropDown({prompt, editable, options = [], startValue, onSelected = () => {}}) {
     const [showOptions, setShowOptions] = useState(false);
@@ -9,6 +10,17 @@ export default function DropDown({prompt, editable, options = [], startValue, on
         id: i,
         name: val.name,
     }));
+
+    let buildOptions = data.map((val, i) => {
+        return (
+            <TouchableOpacity key={String(i)} style={{
+                backgroundColor: startValue && data.findIndex((val) => val.name === startValue) === val.id ? 'pink' : hide
+            }} onPress={() => onSelectedValue(val)}>
+                
+                <Text key={String(i)} style={styles.itemText}>{val.name}</Text>
+            </TouchableOpacity>
+        );
+    });
 
     const onSelectedValue = (val) => {
         setShowOptions(false);
@@ -30,7 +42,7 @@ export default function DropDown({prompt, editable, options = [], startValue, on
                     setShowOptions(!showOptions);
             }}>
                 <Text style={{
-                    color: startValue ? CommonStyles.text.color : CommonStyles.prompt.color
+                    color: startValue ? CommonColors.text : CommonColors.prompt
                 }}>{startValue ? startValue : (prompt ? prompt : "Wähle eine Option...")}</Text>
             </TouchableOpacity>
 
@@ -43,16 +55,7 @@ export default function DropDown({prompt, editable, options = [], startValue, on
                 marginTop: 0,
                 marginBottom: showOptions ? styles.dropdown.marginBottom : 0,
             }}>
-                {showOptions && data.map((val, i) => {
-                    return (
-                        <TouchableOpacity key={String(i)} style={{
-                            backgroundColor: startValue && data.findIndex((val) => val.name === startValue) === val.id ? 'pink' : hide
-                        }} onPress={() => onSelectedValue(val)}>
-                            
-                            <Text key={String(i)} style={styles.itemText}>{val.name}</Text>
-                        </TouchableOpacity>
-                    );
-                })}
+                {showOptions && buildOptions}
             </View>
             
         </View>

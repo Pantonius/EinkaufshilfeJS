@@ -2,12 +2,13 @@ import { StyleSheet, View, FlatList, Text, TouchableOpacity } from "react-native
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { useState, useEffect } from "react";
 import { openDatabase, removeItem } from "../util/db";
-import { CommonStyles } from "../style/CommonStyles";
+import { CommonStyles } from '../style/CommonStyles';
+import * as CommonColors from '../style/CommonColors';
 import Barcode from "../components/Barcode";
 
 function Item({id, title, userid, purchaseinfoid, expirationdate, inventorylocationid, onRemove, removed}) {
     return (
-        <View style={{...styles.item, backgroundColor: removed ? CommonStyles.negative.color : styles.item.backgroundColor }}>
+        <View style={{...styles.item, backgroundColor: removed ? CommonColors.negative : styles.item.backgroundColor }}>
             <View style={CommonStyles.hbox}>
                 <View style={styles.itemInfo}>
                     <Text style={CommonStyles.cardTitle}>{title}</Text>
@@ -109,7 +110,7 @@ const styles = StyleSheet.create({
     },
 
     removeButton: {
-        backgroundColor: CommonStyles.negative.color,
+        backgroundColor: CommonColors.negative,
         borderTopRightRadius: CommonStyles.card.borderRadius,
         borderBottomRightRadius: CommonStyles.card.borderRadius,
         alignItems: 'center',
